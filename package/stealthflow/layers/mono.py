@@ -16,3 +16,6 @@ def conv_5x5(ch):
 
 def conv_7x7(ch):
     return tf.keras.layers.Convolution2D(ch, kernel_size=(7, 7), **conv_args)
+
+def gap():
+    return tf.keras.layers.GlobalAveragePooling2D()

@@ -1,12 +1,12 @@
 import tensorflow as tf
+import stealthflow as sf
 
 
 class ConvBatchReLU(tf.keras.Model):
     def __init__(self, ch, **kwargs):
         super(ConvBatchReLU, self).__init__(**kwargs)
-        self.conv = tf.keras.layers.Convolution2D(ch
-                , kernel_size=(3, 3), strides=(1, 1), dilation_rate=(1, 1), padding='same'
-                , use_bias=True, bias_initializer='zeros', kernel_initializer='he_normal')
+        self.conv = sf.layers.layers.conv_3x3(ch)
+        #tf.keras.layers.Convolution2D(ch, kernel_size=(3, 3), strides=(1, 1), dilation_rate=(1, 1), padding='same', use_bias=True, bias_initializer='zeros', kernel_initializer='he_normal')
         self.batch = tf.keras.layers.BatchNormalization()
     
     def call(self, input_tensor, training=False):

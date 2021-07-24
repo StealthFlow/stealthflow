@@ -1,9 +1,9 @@
 import tensorflow as tf
 
 
-class UNetLayer(tf.keras.Model):
+class UNet(tf.keras.Model):
     def __init__(self, ch, depth, **kwargs):
-        super(UNetLayer, self).__init__(**kwargs)
+        super(UNet, self).__init__(**kwargs)
         self.depth = depth - 1
         self.ch = ch
         if(depth != 0):

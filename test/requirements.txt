@@ -1,0 +1,2 @@
+scikit-image==0.17.2
+silence-tensorflow==1.1.1

@@ -1,6 +1,4 @@
 name = "stealthflow"
 
-from .resnest import ResNeStBlock
-from .tf_layers import MyLayer, MyBlock
-
-from .fid import FIDNumpy, FIDTF
+from stealthflow.layers import block
+#from stealthflow.metrics import fid

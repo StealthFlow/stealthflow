@@ -1,0 +1,17 @@
+FROM tensorflow/tensorflow:2.3.1-gpu
+ENV DEBCONF_NOWARNINGS yes
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN pip install -q --upgrade pip
+
+ENV TZ="Asia/Tokyo"
+RUN apt-get update && apt-get install -y tzdata
+RUN apt-get install -y --quiet --no-install-recommends \
+  graphviz \
+  wget
+  
+RUN pip install -q -U --upgrade tensorflow_hub
+RUN pip install -q -U tensorflow-addons==0.12.2
+RUN pip install -q tensorflow-io==0.16.0
+RUN pip install -q silence-tensorflow==1.1.1
+RUN pip install -i https://test.pypi.org/simple/ stealthflow==0.0.14

@@ -3,34 +3,36 @@ import stealthflow as sf
 
 
 class ConvBatchReLU(tf.keras.Model):
-    def __init__(self, ch, **kwargs):
+    def __init__(self, ch, se=0, **kwargs):
+        self.se = se
         super(ConvBatchReLU, self).__init__(**kwargs)
-        self.conv = sf.layers.layers.conv_3x3(ch)
-        #tf.keras.layers.Convolution2D(ch, kernel_size=(3, 3), strides=(1, 1), dilation_rate=(1, 1), padding='same', use_bias=True, bias_initializer='zeros', kernel_initializer='he_normal')
+        self.conv = sf.layers.conv_3x3(ch)
         self.batch = tf.keras.layers.BatchNormalization()
-    
+        if(self.se!=0):
+            self.seblock = SEBlock(ch, ratio=se)
+            
     def call(self, input_tensor, training=False):
         x = input_tensor
         x = self.conv(x)
         x = self.batch(x)
         x = tf.nn.relu(x)
+        if(self.se==True):
+            x *= self.seblock(x)
         return x
 
 
 class Residual(tf.keras.Model):
-    def __init__(self, ch, se: bool, **kwargs):
+    """(↑)-b-r-c-b-r-c-(+)"""
+    def __init__(self, ch, se=0, **kwargs):
         super(Residual, self).__init__(**kwargs)
         self.se = se
-        self.conv1 = tf.keras.layers.Convolution2D(ch
-                , kernel_size=(3, 3), strides=(1, 1), dilation_rate=(1, 1), padding='same'
-                , use_bias=True, bias_initializer='zeros', kernel_initializer='he_normal')
-        self.conv2 = tf.keras.layers.Convolution2D(ch
-                , kernel_size=(3, 3), strides=(1, 1), dilation_rate=(1, 1), padding='same'
-                , use_bias=True, bias_initializer='zeros', kernel_initializer='he_normal')
+        self.conv1 = sf.layers.conv_3x3(ch)
+        self.conv2 = sf.layers.conv_3x3(ch)
+        self.conv_1x1 = sf.layers.conv_1x1(ch)
         self.batch1 = tf.keras.layers.BatchNormalization()
         self.batch2 = tf.keras.layers.BatchNormalization()
-        if(self.se==True):
-            self.seblock = SEBlock(ch, ratio=8)
+        if(self.se!=0):
+            self.seblock = SEBlock(ch, ratio=se)
 
     def call(self, input_tensor, training=False):
         x = input_tensor
@@ -39,7 +41,7 @@ class Residual(tf.keras.Model):
         x = self.conv1(x)
         x = self.batch2(x)
         x = tf.nn.relu(x)
-        x = self.conv2(x)
+        x = tf.keras.layers.Add()([self.conv2(x), self.conv_1x1(input_tensor)])
         if(self.se==True):
             x *= self.seblock(x)
         return x

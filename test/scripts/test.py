@@ -15,30 +15,25 @@ print(f"tf.version:{tf.version}")
 
 # ---
 
-def define_model(H, W):
-    x = x_in = tf.keras.layers.Input([H, W, 1])
-    #x = sf.layers.conv_3x3(32)(x)
-    x = tf.keras.layers.Convolution2D(32, (3, 3))(x)
-    x = tf.keras.layers.Activation('relu')(x)
-    x = tf.keras.layers.Convolution2D(10, (3, 3))(x)
-    # x = sf.layers.conv_1x1(10)(x)
-    x = tf.keras.layers.GlobalAveragePooling2D()(x)
-    #x = sf.layers.gap()(x)
-    x = tf.keras.layers.Activation('softmax')(x)
-    y = x
-    return tf.keras.Model(inputs=x_in, outputs=y)
-
-
 def train():
-    model = define_model(H=28, W=28)
-    #opt = tf.keras.optimizers.SGD(0.1)
-    #loss = "mse"
+    x = x_in = tf.keras.Input(shape=[28, 28, 1])
+    x = sf.models.VGGSawedOff(input_shape=[28, 28, 1], length=2)()(x)
+    print(x.shape)
+    y = sf.models.Muzzle(input_shape=x.shape[1:],
+             output_dims=10, last_activation='softmax').outer_barrel_residual()(x)
+    model = tf.keras.Model(inputs=x_in, outputs=y)
+
     model.compile(
         optimizer='SGD',#tf.keras.optimizers.SGD(0.1),
         loss='sparse_categorical_crossentropy',
         metrics='accuracy',
     )
     print(model.summary())
+
+    tf.keras.utils.plot_model(
+        model, to_file='./model.png', show_shapes=True, 
+        show_layer_names=True
+    )
 
     (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
 

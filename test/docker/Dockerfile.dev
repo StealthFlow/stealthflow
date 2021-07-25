@@ -11,7 +11,11 @@ RUN apt-get update && apt-get install -y tzdata
 RUN apt-get install -y --quiet --no-install-recommends \
   graphviz \
   wget
-  
+
+RUN python -c 'import tensorflow as tf; _ = tf.keras.datasets.mnist.load_data()'
+RUN python -c 'import tensorflow as tf; _ = tf.keras.datasets.cifar10.load_data()'
+RUN python -c 'import tensorflow as tf; _ = tf.keras.datasets.cifar100.load_data()'
+
 #
 RUN pip install -r requirements.txt -q
 RUN pip install -q -U --upgrade tensorflow_hub
@@ -19,6 +23,9 @@ RUN pip install -q -U tensorflow-addons==0.13.0
 RUN pip install -q -U tensorflow-io==0.16.0
 RUN pip install -q -U tensorflow_probability==0.11.0
 #RUN pip install -i https://test.pypi.org/simple/ stealthflow==0.0.14
+
+RUN pip install easydict
+
 
 WORKDIR /work
 CMD ["/bin/bash"]

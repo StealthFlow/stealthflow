@@ -6,9 +6,9 @@ export NAME_TF25 = stealthflow/tf25-test # colab
 
 pretest: ## run in local before upload modules
 	docker build -f docker/Dockerfile.dev -t $(NAME_DEV) .
-	docker run -it --rm --gpus all\
+	docker run -it --rm --gpus all \
 		-v $(PWD):/work \
-		-v $(PWD)/../:/sf \
+		-v $(PWD)/../package:/work/stealthflow \
 		$(NAME_DEV) python3 scripts/test.py
 
 tf23: ## build&run with tensorflow-gpu 2.3

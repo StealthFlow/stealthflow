@@ -4,7 +4,7 @@ import tensorflow as tf
 from .tf_layers import MyLayer
 
 class ResNeStBlock():#tf.keras.layers.Layer):
-    def __init__(self, radix, cardinality, bottleneck, ratio, regularizer=None):#, show_shapes=True):
+    def __init__(self, radix, cardinality, bottleneck, ratio, weight_decay=None):#, show_shapes=True):
         """
         (3.1 Split-Attention Block)
         K: "cardinality" hyperparameter
@@ -35,7 +35,7 @@ class ResNeStBlock():#tf.keras.layers.Layer):
         # width = b * K
         # C -> bK -> b x K -> bK -> C; c'/k = b (Fig1)
 
-        self.mylayer = MyLayer(regularizer)
+        self.mylayer = MyLayer(weight_decay)
 
     def build(self, input_shape):
         #super(ResNeStBlock, self).build(input_shape)

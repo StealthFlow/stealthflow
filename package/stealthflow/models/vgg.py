@@ -3,9 +3,10 @@ import stealthflow as sf
 
 
 class VGGSawedOff:
-    def __init__(self, input_shape, length: int):
+    def __init__(self, input_shape, length: int, weight_decay=None):
         self.input_shape = input_shape
         self.barrel = self.create_barrel(length)
+        self.weight_decay = weight_decay
 
     @staticmethod
     def create_barrel(length):
@@ -24,29 +25,30 @@ class VGGSawedOff:
     def __call__(self):
         x = x_in = tf.keras.layers.Input(shape=self.input_shape)
         for b in self.barrel:
-            x = sf.layers.maxpool_2x2()(x) if b=="p" else sf.layers.ConvBatchReLU(ch=b)(x)
+            x = sf.layers.maxpool_2x2()(x) if b=="p" else sf.layers.ConvBatchReLU(b, self.weight_decay)(x)
         y = x
         model_name = "".join([f"-{str(_)}" for _ in self.barrel])
         return tf.keras.Model(inputs=x_in, outputs=y, name=f"VGG-Sawedoff{model_name}")
 
 
 class VGGDoubleBarrel:
-    def __init__(self, length, input_shape: int):
+    def __init__(self, length, input_shape: int, weight_decay=None):
         self.input_shape = input_shape
+        self.weight_decay = weight_decay
 
     def create_model(self):
         x = x_in = tf.keras.layers.Input(shape=self.input_shape)
-        x = sf.layers.ConvBatchReLU(ch=64)(x)
-        x = sf.layers.ConvBatchReLU(ch=64)(x)
+        x = sf.layers.ConvBatchReLU(64, self.weight_decay)(x)
+        x = sf.layers.ConvBatchReLU(64, self.weight_decay)(x)
         x = sf.layers.maxpool_2x2()(x)
-        x = sf.layers.ConvBatchReLU(ch=128)(x)
-        x = sf.layers.ConvBatchReLU(ch=128)(x)
+        x = sf.layers.ConvBatchReLU(128, self.weight_decay)(x)
+        x = sf.layers.ConvBatchReLU(128, self.weight_decay)(x)
         x = sf.layers.maxpool_2x2()(x)
-        x = sf.layers.Residual(ch=256)(x)
-        x = sf.layers.Residual(ch=256)(x)
-        x = sf.layers.Residual(ch=256)(x)
+        x = sf.layers.Residual(256, self.weight_decay)(x)
+        x = sf.layers.Residual(256, self.weight_decay)(x)
+        x = sf.layers.Residual(256, self.weight_decay)(x)
         x = sf.layers.maxpool_2x2()(x)
-        x = sf.layers.Residual(ch=512)(x)
-        x = sf.layers.Residual(ch=512)(x)
-        x = sf.layers.Residual(ch=512)(x)
+        x = sf.layers.Residual(512, self.weight_decay)(x)
+        x = sf.layers.Residual(512, self.weight_decay)(x)
+        x = sf.layers.Residual(512, self.weight_decay)(x)
         return tf.keras.Model(inputs=x_in, outputs=x)

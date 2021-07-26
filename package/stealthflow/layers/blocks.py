@@ -41,7 +41,7 @@ class Residual(tf.keras.Model):
         x = self.conv1(x)
         x = self.batch2(x)
         x = tf.nn.relu(x)
-        x = tf.keras.layers.Add()([self.conv2(x), self.conv_1x1(input_tensor, self.weight_decay)])
+        x = tf.keras.layers.Add()([self.conv2(x), self.conv_1x1(input_tensor)])
         if(self.se==True):
             x *= self.seblock(x)
         return x

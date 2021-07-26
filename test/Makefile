@@ -8,7 +8,7 @@ pretest: ## run in local before upload modules
 	docker build -f docker/Dockerfile.dev -t $(NAME_DEV) .
 	docker run -it --rm --gpus all \
 		-v $(PWD):/work \
-		-v $(PWD)/../package:/work/stealthflow \
+		-v $(PWD)/../package:/stealthflow \
 		$(NAME_DEV) python3 scripts/test.py
 
 tf23: ## build&run with tensorflow-gpu 2.3

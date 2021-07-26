@@ -36,7 +36,7 @@ class VGGDoubleBarrel:
         self.input_shape = input_shape
         self.weight_decay = weight_decay
 
-    def create_model(self):
+    def __call__(self):
         x = x_in = tf.keras.layers.Input(shape=self.input_shape)
         x = sf.layers.ConvBatchReLU(64, self.weight_decay)(x)
         x = sf.layers.ConvBatchReLU(64, self.weight_decay)(x)
